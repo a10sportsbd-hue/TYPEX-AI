@@ -52,6 +52,9 @@ object BengaliPhoneticEngine {
     )
 
     private val consonants = linkedMapOf(
+        // Case-sensitive Avro-style retroflex and special consonant keys.
+        "NG" to "ঞ", "Ng" to "ঙ", "Th" to "ঠ", "Dh" to "ঢ",
+        "Sh" to "ষ", "T" to "ট", "D" to "ড", "N" to "ণ",
         // Common conjunct clusters are single tokens: this avoids inserting a
         // virama inside the conjunct itself.
         "ngk" to "ঙ্ক", "ngg" to "ঙ্গ", "ngh" to "ঙ্ঘ",
@@ -78,6 +81,10 @@ object BengaliPhoneticEngine {
     )
 
     private val vowels = linkedMapOf(
+        "OI" to Pair("ঐ", "ৈ"), "OU" to Pair("ঔ", "ৌ"),
+        "II" to Pair("ঈ", "ী"), "UU" to Pair("ঊ", "ূ"),
+        "I" to Pair("ঈ", "ী"), "U" to Pair("ঊ", "ূ"),
+        "O" to Pair("ও", "ো"),
         "rri" to Pair("ৠ", "ৄ"),
         "oi" to Pair("ঐ", "ৈ"), "ou" to Pair("ঔ", "ৌ"),
         "aa" to Pair("আ", "া"), "ii" to Pair("ঈ", "ী"),
@@ -106,8 +113,8 @@ object BengaliPhoneticEngine {
 
     fun transliterate(input: String): String {
         if (input.isBlank()) return ""
-        val key = input.lowercase()
-        dictionary[key]?.let { return it }
+        val key = input.trim()
+        dictionary[key.lowercase()]?.let { return it }
 
         val out = StringBuilder()
         var i = 0
