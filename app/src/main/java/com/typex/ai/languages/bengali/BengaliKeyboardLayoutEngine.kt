@@ -28,13 +28,13 @@ object BengaliKeyboardLayoutEngine {
         "z" to "য়", "x" to "ষ", "c" to "ছ", "v" to "অ", "b" to "ভ", "n" to "ণ", "m" to "ঙ"
     )
     private val jatiya = mapOf(
-        "q" to "ং", "w" to "য়", "e" to "ঢ", "r" to "প", "t" to "ঠ", "y" to "ছ", "u" to "ঝ", "i" to "ঞ", "o" to "ঘ", "p" to "ঢ়",
+        "q" to "ঙ", "w" to "য", "e" to "ড", "r" to "প", "t" to "ট", "y" to "চ", "u" to "জ", "i" to "হ", "o" to "গ", "p" to "ড়",
         "a" to "ৃ", "s" to "ু", "d" to "ি", "f" to "ব", "g" to "্", "h" to "া", "j" to "ক", "k" to "ত", "l" to "দ",
         "z" to "ঁ", "x" to "ো", "c" to "ে", "v" to "র", "b" to "ন", "n" to "স", "m" to "ম"
     )
     private val jatiyaShift = mapOf(
-        "q" to "ৣ", "w" to "ঊ", "e" to "ঈ", "r" to "ফ", "t" to "ঠ", "y" to "ঐ", "u" to "ঝ", "i" to "ঞ", "o" to "ঘ", "p" to "ঢ়",
-        "a" to "ঋ", "s" to "উ", "d" to "ই", "f" to "ৰ", "g" to "॥", "h" to "আ", "j" to "ক", "k" to "ত", "l" to "ঌ",
+        "q" to "ং", "w" to "য়", "e" to "ঢ", "r" to "ফ", "t" to "ঠ", "y" to "ছ", "u" to "ঝ", "i" to "ঞ", "o" to "ঘ", "p" to "ঢ়",
+        "a" to "ঋ", "s" to "উ", "d" to "ই", "f" to "ৰ", "g" to "॥", "h" to "আ", "j" to "ঽ", "k" to "ত", "l" to "ঌ",
         "z" to "৺", "x" to "ঔ", "c" to "এ", "v" to "ল", "b" to "ণ", "n" to "ষ", "m" to "শ"
     )
 
