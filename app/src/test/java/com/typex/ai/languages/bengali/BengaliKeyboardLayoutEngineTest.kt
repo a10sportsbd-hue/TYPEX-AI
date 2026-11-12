@@ -25,6 +25,12 @@ class BengaliKeyboardLayoutEngineTest {
         assertEquals("ত", BengaliKeyboardLayoutEngine.outputForKey("jatiya", "k"))
         assertEquals("আ", BengaliKeyboardLayoutEngine.outputForKey("jatiya", "h", true))
     }
+    @Test fun touchDispatchPreservesAvroShiftAndUsesLogicalKeysForDirectLayouts() {
+        assertEquals("T", BengaliKeyboardLayoutEngine.touchInput("avro", "t", "T"))
+        assertEquals("t", BengaliKeyboardLayoutEngine.touchInput("avro", "t", "t"))
+        assertEquals("t", BengaliKeyboardLayoutEngine.touchInput("probhat", "t", "ট"))
+        assertEquals("h", BengaliKeyboardLayoutEngine.touchInput("jatiya", "h", "া"))
+    }
     @Test fun unknownLayoutFallsBackToAvro() {
         assertEquals("avro", BengaliKeyboardLayoutEngine.normalize("unknown"))
         assertTrue(BengaliKeyboardLayoutEngine.isPhonetic("unknown"))
