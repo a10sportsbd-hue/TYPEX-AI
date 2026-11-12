@@ -18,24 +18,32 @@ object BengaliKeyboardLayoutEngine {
     )
 
     private val probhat = mapOf(
-        "q" to "দ", "w" to "ূ", "e" to "ী", "r" to "র", "t" to "ট", "y" to "এ", "u" to "ু", "i" to "ি", "o" to "ও", "p" to "প",
-        "a" to "া", "s" to "স", "d" to "ড", "f" to "ত", "g" to "গ", "h" to "হ", "j" to "জ", "k" to "ক", "l" to "ল",
-        "z" to "য়", "x" to "শ", "c" to "চ", "v" to "আ", "b" to "ব", "n" to "ন", "m" to "ম"
+        "a" to "া", "b" to "ব", "c" to "চ", "d" to "ড", "e" to "ী", "f" to "ত",
+        "g" to "গ", "h" to "হ", "i" to "ি", "j" to "জ", "k" to "ক", "l" to "ল",
+        "m" to "ম", "n" to "ন", "o" to "ও", "p" to "প", "q" to "দ", "r" to "র",
+        "s" to "স", "t" to "ট", "u" to "ু", "v" to "আ", "w" to "ূ", "x" to "শ",
+        "y" to "এ", "z" to "য়"
     )
     private val probhatShift = mapOf(
-        "q" to "ধ", "w" to "ঊ", "e" to "ঈ", "r" to "ড়", "t" to "ঠ", "y" to "ঐ", "u" to "উ", "i" to "ই", "o" to "ঔ", "p" to "ফ",
-        "a" to "ঌ", "s" to "ৡ", "d" to "ৄ", "f" to "ত", "g" to "ঘ", "h" to "ঽ", "j" to "ঝ", "k" to "খ", "l" to "ং",
-        "z" to "য়", "x" to "ষ", "c" to "ছ", "v" to "অ", "b" to "ভ", "n" to "ণ", "m" to "ঙ"
+        "a" to "অ", "b" to "ভ", "c" to "ছ", "d" to "ঢ", "e" to "ঈ", "f" to "থ",
+        "g" to "ঘ", "h" to "ঃ", "i" to "ই", "j" to "ঝ", "k" to "খ", "l" to "ং",
+        "m" to "ঙ", "n" to "ণ", "o" to "ঔ", "p" to "ফ", "q" to "ধ", "r" to "ড়",
+        "s" to "ষ", "t" to "ঠ", "u" to "উ", "v" to "ঋ", "w" to "ঊ", "x" to "ঢ়",
+        "y" to "ঐ", "z" to "য"
     )
     private val jatiya = mapOf(
-        "q" to "ঙ", "w" to "য", "e" to "ড", "r" to "প", "t" to "ট", "y" to "চ", "u" to "জ", "i" to "হ", "o" to "গ", "p" to "ড়",
-        "a" to "ৃ", "s" to "ু", "d" to "ি", "f" to "ব", "g" to "্", "h" to "া", "j" to "ক", "k" to "ত", "l" to "দ",
-        "z" to "ঁ", "x" to "ো", "c" to "ে", "v" to "র", "b" to "ন", "n" to "স", "m" to "ম"
+        "a" to "ৃ", "b" to "ন", "c" to "ে", "d" to "ি", "e" to "ড", "f" to "ব",
+        "g" to "্", "h" to "া", "i" to "হ", "j" to "ক", "k" to "ত", "l" to "দ",
+        "m" to "ম", "n" to "স", "o" to "গ", "p" to "ড়", "q" to "ঙ", "r" to "প",
+        "s" to "ু", "t" to "ট", "u" to "জ", "v" to "র", "w" to "য", "x" to "ো",
+        "y" to "চ", "z" to "ঁ"
     )
     private val jatiyaShift = mapOf(
-        "q" to "ং", "w" to "য়", "e" to "ঢ", "r" to "ফ", "t" to "ঠ", "y" to "ছ", "u" to "ঝ", "i" to "ঞ", "o" to "ঘ", "p" to "ঢ়",
-        "a" to "ঋ", "s" to "উ", "d" to "ই", "f" to "ৰ", "g" to "॥", "h" to "আ", "j" to "ঽ", "k" to "ত", "l" to "ঌ",
-        "z" to "৺", "x" to "ঔ", "c" to "এ", "v" to "ল", "b" to "ণ", "n" to "ষ", "m" to "শ"
+        "a" to "ৗ", "b" to "ণ", "c" to "ৈ", "d" to "ী", "e" to "ঢ", "f" to "ভ",
+        "g" to "।", "h" to "অ", "i" to "ঞ", "j" to "খ", "k" to "থ", "l" to "ধ",
+        "m" to "শ", "n" to "ষ", "o" to "ঘ", "p" to "ঢ়", "q" to "ং", "r" to "ফ",
+        "s" to "ূ", "t" to "ঠ", "u" to "ঝ", "v" to "ল", "w" to "য়", "x" to "ৌ",
+        "y" to "ছ", "z" to "ঃ"
     )
 
     fun normalize(layout: String): String = layout.lowercase().takeIf { it in supported } ?: AVRO
