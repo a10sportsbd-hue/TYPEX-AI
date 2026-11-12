@@ -47,7 +47,7 @@ class TypexInputMethodService : InputMethodService() {
     private var bengaliMode = false
     private var currentEditorInputType: Int = EditorInfo.TYPE_CLASS_TEXT
     private val handler = Handler(Looper.getMainLooper())
-    private val romanBuffer = StringBuilder()
+    private val bengaliComposition = BengaliCompositionController()
     private val typedToken = StringBuilder()
     private var previousCommittedWord: String = ""
     private var sentenceStart = true
@@ -85,7 +85,7 @@ class TypexInputMethodService : InputMethodService() {
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
         super.onStartInput(attribute, restarting)
         currentEditorInputType = attribute?.inputType ?: EditorInfo.TYPE_CLASS_TEXT
-        romanBuffer.clear()
+        bengaliComposition.clear()
         typedToken.clear()
         previousCommittedWord = ""
         refreshPersonalDictionaries()
@@ -361,7 +361,7 @@ class TypexInputMethodService : InputMethodService() {
         addBottomKey(row, "↵", 1.2f, specialBg) { commitBengaliBuffer(); performEnter() }
         parent.addView(row)
 
-        if (bengaliMode && romanBuffer.isNotEmpty()) {
+        if (bengaliMode && !bengaliComposition.isEmpty()) {
             val suggestions = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER
@@ -372,7 +372,7 @@ class TypexInputMethodService : InputMethodService() {
             val customWords = customBengaliWords
             val mergedDictionary = builtInBengaliWords + customWords
             val learnedEnglish = learnedEnglishWords
-            val romanInput = romanBuffer.toString()
+            val romanInput = bengaliComposition.raw()
             val bengaliEngine = BengaliWordSuggestionEngine(mergedDictionary)
             val pipelineResult = com.typex.ai.languages.bengali.BengaliTypingPipeline.analyze(
                 romanInput,
@@ -398,7 +398,7 @@ class TypexInputMethodService : InputMethodService() {
                     currentInputConnection?.commitText(bnCorrection.second, 1)
                     if (!isPasswordField(currentEditorInputType)) TypingStatsStore.recordSuggestion(this)
                     previousCommittedWord = bnCorrection.second
-                    romanBuffer.clear()
+                    bengaliComposition.clear()
                     renderKeyboard()
                 }
             }
@@ -407,8 +407,8 @@ class TypexInputMethodService : InputMethodService() {
             } else {
                 rankedBengaliCandidates.forEachIndexed { index, candidate ->
                     addSuggestion(suggestions, candidate, index == 0, onLongPress = {
-                        if (romanBuffer.isNotBlank()) {
-                            BengaliCustomDictionaryStore.put(this, romanBuffer.toString(), candidate)
+                        if (bengaliComposition.raw().isNotBlank()) {
+                            BengaliCustomDictionaryStore.put(this, bengaliComposition.raw(), candidate)
                             customBengaliWords = BengaliCustomDictionaryStore.all(this)
                             renderKeyboard()
                         }
@@ -420,7 +420,7 @@ class TypexInputMethodService : InputMethodService() {
                             learnedBengaliScores = UserVocabularyStore.bengaliScores(this)
                         }
                         previousCommittedWord = candidate
-                        romanBuffer.clear()
+                        bengaliComposition.clear()
                         renderKeyboard()
                     }
                 }
@@ -636,7 +636,7 @@ class TypexInputMethodService : InputMethodService() {
                             } else null
                             if (candidate != null) {
                                 if (bengaliMode) {
-                                    romanBuffer.clear()
+                                    bengaliComposition.clear()
                                     currentInputConnection?.setComposingText("", 1)
                                 }
                                 currentInputConnection?.commitText(candidate, 1)
@@ -743,24 +743,17 @@ class TypexInputMethodService : InputMethodService() {
     }
 
     private fun appendRoman(value: String) {
-        romanBuffer.append(value)
-        val composing = MixedLanguageEngine.resolveBengaliModeToken(
-            romanBuffer.toString(), customBengaliWords,
-            learnedEnglishWords
-        )
+        bengaliComposition.append(value, customBengaliWords, learnedEnglishWords)
+        val composing = bengaliComposition.preview(customBengaliWords, learnedEnglishWords)
         currentInputConnection?.setComposingText(composing, 1)
     }
 
     private fun commitBengaliBuffer() {
-        if (romanBuffer.isEmpty()) return
-        val converted = MixedLanguageEngine.resolveBengaliModeToken(
-            romanBuffer.toString(), customBengaliWords,
-            learnedEnglishWords
-        )
+        if (bengaliComposition.isEmpty()) return
+        val converted = bengaliComposition.commit(customBengaliWords, learnedEnglishWords)
         currentInputConnection?.commitText(converted, 1)
         typedToken.setLength(0)
         typedToken.append(converted)
-        romanBuffer.clear()
     }
 
     private fun expandShortcutBeforeBoundary() {
@@ -782,14 +775,14 @@ class TypexInputMethodService : InputMethodService() {
     }
 
     private fun deleteOne() {
-        if (bengaliMode && romanBuffer.isNotEmpty()) {
-            romanBuffer.deleteCharAt(romanBuffer.length - 1)
-            if (romanBuffer.isEmpty()) {
+        if (bengaliMode && !bengaliComposition.isEmpty()) {
+            bengaliComposition.backspace()
+            if (bengaliComposition.isEmpty()) {
                 currentInputConnection?.setComposingText("", 1)
             } else {
                 currentInputConnection?.setComposingText(
                     MixedLanguageEngine.resolveBengaliModeToken(
-                        romanBuffer.toString(), customBengaliWords, learnedEnglishWords
+                        bengaliComposition.raw(), customBengaliWords, learnedEnglishWords
                     ), 1
                 )
             }
