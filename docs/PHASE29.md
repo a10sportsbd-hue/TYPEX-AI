@@ -34,3 +34,9 @@ Begin the TYPEX AI rebuild by making Bengali phonetic composition state explicit
 
 
 CI validation is being iterated on the current branch before merging to main.
+
+## Text navigation and editing increment
+- Added horizontal drag on the spacebar to move the editor cursor by Unicode code point using the current InputConnection extracted text.
+- Added an explicit text-edit panel with Select all, Cut, Copy and Paste through Android's native context-menu actions.
+- Editing actions are suppressed in password/sensitive fields.
+- These controls require validation across different target apps because some editors restrict context-menu actions or extracted-text access.
