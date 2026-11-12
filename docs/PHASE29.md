@@ -40,3 +40,9 @@ CI validation is being iterated on the current branch before merging to main.
 - Added an explicit text-edit panel with Select all, Cut, Copy and Paste through Android's native context-menu actions.
 - Editing actions are suppressed in password/sensitive fields.
 - These controls require validation across different target apps because some editors restrict context-menu actions or extracted-text access.
+
+## CI verification checkpoint — 2026-11-12
+- GitHub Actions run: [#10](https://github.com/a10sportsbd-hue/TYPEX-AI/actions/runs/43198059523)
+- `gradle testDebugUnitTest assembleDebug` completed successfully on the Phase 29 branch.
+- Debug APK artifact uploaded: `TYPEX-AI-debug-apk` (interim engineering build, not a final release).
+- Passing CI proves Kotlin compilation, unit-test task and APK packaging on the GitHub runner. It does not prove that the IME behaves correctly on every Android app/device.
