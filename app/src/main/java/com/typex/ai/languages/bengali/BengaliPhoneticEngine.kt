@@ -116,7 +116,7 @@ object BengaliPhoneticEngine {
 
     fun transliterate(input: String): String {
         if (input.isBlank()) return ""
-        val key = input.trim()
+        val key = normalizeRomanInput(input)
         dictionary[key.lowercase()]?.let { return it }
 
         val out = StringBuilder()
@@ -190,7 +190,7 @@ object BengaliPhoneticEngine {
             .map { it.value }
             .toList()
 
-        val converted = transliterate(query)
+        val converted = transliterate(roman)
         return buildList {
             if (exact != null) add(exact)
             if (converted.isNotBlank() && converted !in this) add(converted)
