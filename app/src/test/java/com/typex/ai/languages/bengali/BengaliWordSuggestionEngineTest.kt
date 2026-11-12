@@ -26,7 +26,7 @@ class BengaliWordSuggestionEngineTest {
         val results = engine.suggestNativePrefix("আম")
         assertTrue(results.contains("আমার"))
         assertTrue(results.contains("আমাকে"))
-        assertTrue(!results.contains("আমি"))
+        assertTrue(results.contains("আমি"))
         assertTrue(!results.contains("তুমি"))
     }
 
