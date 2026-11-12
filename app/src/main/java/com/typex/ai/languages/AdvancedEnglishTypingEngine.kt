@@ -97,6 +97,7 @@ class AdvancedEnglishTypingEngine(
                         q.length >= 7 && word.take(2) == q.take(2))
             }
             .sortedWith(compareBy<Pair<String, Int>> { it.second }
+                .thenByDescending { isSubsequence(q, it.first) }
                 .thenByDescending { frequency[it.first] ?: 0 }
                 .thenBy { it.first.length }.thenBy { it.first })
             .firstOrNull()?.first
@@ -111,6 +112,14 @@ class AdvancedEnglishTypingEngine(
         if (first < 0) return text
         return text.substring(0, first) +
             text[first].uppercaseChar() + text.substring(first + 1)
+    }
+
+    private fun isSubsequence(needle: String, haystack: String): Boolean {
+        var index = 0
+        for (character in haystack) {
+            if (index < needle.length && needle[index] == character) index++
+        }
+        return index == needle.length
     }
 
     private fun prefixPredictions(prefix: String): List<String> {
