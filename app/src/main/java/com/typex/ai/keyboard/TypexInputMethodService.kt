@@ -90,6 +90,10 @@ class TypexInputMethodService : InputMethodService() {
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
         super.onStartInput(attribute, restarting)
         currentEditorInputType = attribute?.inputType ?: EditorInfo.TYPE_CLASS_TEXT
+        // Finalize any composing span before resetting local state. Some editors
+        // restart the IME while retaining the composing region; leaving it active
+        // can make the next setComposingText replace text that was already typed.
+        currentInputConnection?.finishComposingText()
         bengaliComposition.clear()
         typedToken.clear()
         previousCommittedWord = ""
@@ -113,6 +117,7 @@ class TypexInputMethodService : InputMethodService() {
 
     override fun onFinishInput() {
         commitBengaliBuffer()
+        currentInputConnection?.finishComposingText()
         TypingStatsStore.flush(this)
         super.onFinishInput()
     }
@@ -491,6 +496,7 @@ class TypexInputMethodService : InputMethodService() {
             if (bnCorrection != null && candidates.none { it == bnCorrection.second }) {
                 addSuggestion(suggestions, "সংশোধন: ${bnCorrection.second}", true) {
                     currentInputConnection?.commitText(bnCorrection.second, 1)
+                    currentInputConnection?.finishComposingText()
                     if (!isPasswordField(currentEditorInputType)) TypingStatsStore.recordSuggestion(this)
                     previousCommittedWord = bnCorrection.second
                     bengaliComposition.clear()
@@ -509,6 +515,7 @@ class TypexInputMethodService : InputMethodService() {
                         }
                     }) {
                         currentInputConnection?.commitText(candidate, 1)
+                        currentInputConnection?.finishComposingText()
                         if (!isPasswordField(currentEditorInputType)) {
                             TypingStatsStore.recordSuggestion(this)
                             UserVocabularyStore.recordAcceptedBengali(this, candidate)
@@ -889,6 +896,7 @@ class TypexInputMethodService : InputMethodService() {
         if (bengaliComposition.isEmpty()) return
         val converted = bengaliComposition.commit(customBengaliWords, learnedEnglishWords)
         currentInputConnection?.commitText(converted, 1)
+        currentInputConnection?.finishComposingText()
         typedToken.setLength(0)
         typedToken.append(converted)
     }
