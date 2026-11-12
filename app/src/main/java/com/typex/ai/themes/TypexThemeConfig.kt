@@ -140,6 +140,16 @@ object TypexThemes {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putInt(KEY_SIDE_INSET, value.coerceIn(0, 14)).apply()
     }
 
+    fun bengaliLayout(context: Context): String =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getString(KEY_BENGALI_LAYOUT, "avro") ?: "avro"
+
+    fun saveBengaliLayout(context: Context, value: String) {
+        val safe = com.typex.ai.languages.bengali.BengaliKeyboardLayoutEngine.normalize(value)
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .edit().putString(KEY_BENGALI_LAYOUT, safe).apply()
+    }
+
     private const val PREFS = "typex_theme_preferences"
     private const val KEY_THEME = "selected_theme"
     private const val KEY_HEIGHT = "key_height_dp"
@@ -155,4 +165,5 @@ object TypexThemes {
     private const val KEY_KEY_RADIUS = "key_corner_radius"
     private const val KEY_TEXT_SIZE = "key_text_size"
     private const val KEY_SIDE_INSET = "keyboard_side_inset"
+    private const val KEY_BENGALI_LAYOUT = "bengali_layout"
 }
