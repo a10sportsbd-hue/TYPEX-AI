@@ -16,4 +16,26 @@ class BengaliWordSuggestionEngineTest {
         val engine = BengaliWordSuggestionEngine(emptyMap())
         assertTrue(engine.suggest("x", previousBengaliWord = "আমি").contains("ভালো"))
     }
+    @Test fun nativePrefixSuggestsOnlyLongerBengaliWords() {
+        val engine = BengaliWordSuggestionEngine(mapOf(
+            "ami" to "আমি",
+            "amar" to "আমার",
+            "amake" to "আমাকে",
+            "tumi" to "তুমি"
+        ))
+        val results = engine.suggestNativePrefix("আম")
+        assertTrue(results.contains("আমার"))
+        assertTrue(results.contains("আমাকে"))
+        assertTrue(!results.contains("আমি"))
+        assertTrue(!results.contains("তুমি"))
+    }
+
+    @Test fun nativePrefixHonorsLimitAndEmptyInput() {
+        val engine = BengaliWordSuggestionEngine(mapOf(
+            "amar" to "আমার", "amake" to "আমাকে", "amader" to "আমাদের"
+        ))
+        assertTrue(engine.suggestNativePrefix("").isEmpty())
+        assertTrue(engine.suggestNativePrefix("আম", limit = 1).size <= 1)
+    }
+
 }
