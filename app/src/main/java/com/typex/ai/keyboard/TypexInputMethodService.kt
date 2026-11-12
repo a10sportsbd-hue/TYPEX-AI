@@ -526,7 +526,7 @@ class TypexInputMethodService : InputMethodService() {
             !isPasswordField(currentEditorInputType)) {
             val connection = currentInputConnection
             val beforeCursor = connection?.getTextBeforeCursor(64, 0)?.toString().orEmpty()
-            val nativePrefix = beforeCursor.substringAfterLast(Regex("[\\s.,!?;:।]"))
+            val nativePrefix = beforeCursor.takeLastWhile { !it.isWhitespace() && it !in ".,!?;:।" }
             val nativeCandidates = BengaliWordSuggestionEngine(
                 builtInBengaliWords + customBengaliWords
             ).suggestNativePrefix(nativePrefix, limit = 5)
