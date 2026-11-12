@@ -676,7 +676,7 @@ class TypexInputMethodService : InputMethodService() {
                 if (TypexThemes.keySoundEnabled(this@TypexInputMethodService)) {
                     playSoundEffect(android.view.SoundEffectConstants.CLICK)
                 }
-                val dispatchLabel = if (bengaliMode && !BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this@TypexInputMethodService))) actionLabel else label
+                val dispatchLabel = if (bengaliMode) BengaliKeyboardLayoutEngine.touchInput(TypexThemes.bengaliLayout(this@TypexInputMethodService), actionLabel, label) else label
                 handleKey(dispatchLabel)
             }
             if (actionLabel == "⌫") {
