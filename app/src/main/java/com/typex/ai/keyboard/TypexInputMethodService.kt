@@ -213,12 +213,21 @@ class TypexInputMethodService : InputMethodService() {
                 if (intent != null) startActivity(intent)
             } catch (_: Exception) { }
         }
-        addBottomKey(row, if (oneHandMode) "↔" else "⇤", 0.8f, specialBg) {
-            oneHandMode = !oneHandMode
-            root?.layoutParams = root?.layoutParams?.apply {
-                width = if (oneHandMode) dp(TypexThemes.oneHandWidth(this@TypexInputMethodService)) else ViewGroup.LayoutParams.MATCH_PARENT
+        addBottomKey(row, if (bengaliMode) BengaliKeyboardLayoutEngine.layoutName(TypexThemes.bengaliLayout(this)) else if (oneHandMode) "↔" else "⇤", 0.8f, specialBg) {
+            if (bengaliMode) {
+                val layouts = BengaliKeyboardLayoutEngine.supported
+                val current = BengaliKeyboardLayoutEngine.normalize(TypexThemes.bengaliLayout(this))
+                val nextLayout = layouts[(layouts.indexOf(current) + 1) % layouts.size]
+                commitBengaliBuffer()
+                TypexThemes.saveBengaliLayout(this, nextLayout)
+                renderKeyboard()
+            } else {
+                oneHandMode = !oneHandMode
+                root?.layoutParams = root?.layoutParams?.apply {
+                    width = if (oneHandMode) dp(TypexThemes.oneHandWidth(this@TypexInputMethodService)) else ViewGroup.LayoutParams.MATCH_PARENT
+                }
+                root?.requestLayout()
             }
-            root?.requestLayout()
         }
         addBottomKey(row, "ABC", 0.8f, keyBg) { symbols = false; renderKeyboard() }
         parent.addView(row)
@@ -352,19 +361,6 @@ class TypexInputMethodService : InputMethodService() {
             bengaliMode = !bengaliMode
             symbols = false
             renderKeyboard()
-        }
-        addBottomKey(row, if (bengaliMode) BengaliKeyboardLayoutEngine.layoutName(TypexThemes.bengaliLayout(this)) else "ABC", 1.0f, keyBg) {
-            if (bengaliMode) {
-                val layouts = BengaliKeyboardLayoutEngine.supported
-                val current = BengaliKeyboardLayoutEngine.normalize(TypexThemes.bengaliLayout(this))
-                val next = layouts[(layouts.indexOf(current) + 1) % layouts.size]
-                commitBengaliBuffer()
-                TypexThemes.saveBengaliLayout(this, next)
-                renderKeyboard()
-            } else {
-                symbols = !symbols
-                renderKeyboard()
-            }
         }
         addBottomKey(row, ",", 0.75f, keyBg) { commitPunctuation(",") }
         addBottomKey(row, if (bengaliMode) "স্পেস" else "space", 3.6f, keyBg) {
