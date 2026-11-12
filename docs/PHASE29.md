@@ -31,3 +31,6 @@ Begin the TYPEX AI rebuild by making Bengali phonetic composition state explicit
 - The key maps are an initial mobile QWERTY adaptation and still need comparison against the official desktop/mobile layouts and real-user validation. They are not yet certified as exact standards-compliant implementations.
 - Avro transliteration has improved case-sensitive retroflex support, but is not yet a complete Avro-compatible engine.
 - National/Probhat shift layers, conjunct formation, kar/reph automation, candidate handling, and cursor/text-editing gestures remain to be completed.
+
+
+CI validation is being iterated on the current branch before merging to main.
