@@ -899,8 +899,15 @@ class TypexInputMethodService : InputMethodService() {
         val selected = connection.getSelectedText(0)
         if (!selected.isNullOrEmpty()) connection.commitText("", 1)
         else {
-            if (!connection.deleteSurroundingTextInCodePoints(1, 0)) {
-                connection.deleteSurroundingText(1, 0)
+            val beforeCursor = connection.getTextBeforeCursor(16, 0)
+            val codePoints = UnicodeDeletionEngine.codePointsToDelete(beforeCursor ?: "")
+            if (codePoints > 0) {
+                if (!connection.deleteSurroundingTextInCodePoints(codePoints, 0)) {
+                    val utf16Length = Character.offsetByCodePoints(beforeCursor, beforeCursor.length, -codePoints)
+                    connection.deleteSurroundingText(beforeCursor.length - utf16Length, 0)
+                }
+            } else if (beforeCursor == null) {
+                connection.deleteSurroundingTextInCodePoints(1, 0)
             }
         }
     }
