@@ -24,6 +24,8 @@ import com.typex.ai.languages.AdvancedAutocorrectEngine
 import com.typex.ai.languages.AdvancedEnglishTypingEngine
 import com.typex.ai.languages.PhraseCompletionEngine
 import com.typex.ai.languages.TypingStatsStore
+import com.typex.ai.languages.AdaptivePredictionRanker
+import com.typex.ai.languages.SmartKeyboardIntelligence
 import com.typex.ai.languages.SwipeTypingEngine
 import com.typex.ai.languages.bengali.BengaliPhoneticEngine
 import com.typex.ai.languages.bengali.BengaliWordSuggestionEngine
@@ -115,7 +117,7 @@ class TypexInputMethodService : InputMethodService() {
             setPadding(dp(5), dp(8), dp(5), dp(8))
             setBackgroundColor(bg)
             layoutParams = ViewGroup.LayoutParams(
-                if (oneHandMode) dp(TypexThemes.oneHandWidth(this)) else ViewGroup.LayoutParams.MATCH_PARENT,
+                if (oneHandMode) dp(TypexThemes.oneHandWidth(this@TypexInputMethodService)) else ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
             gravity = if (oneHandMode) Gravity.END else Gravity.CENTER
@@ -224,7 +226,7 @@ class TypexInputMethodService : InputMethodService() {
         val search = EditText(this).apply {
             hint = "Search emoji: love, হাসি, খাবার, বৃষ্টি..."
             setSingleLine(true); textSize = 13f
-            setTextColor(foreground); setHintTextColor(foreground)
+            setTextColor(this@TypexInputMethodService.foreground); setHintTextColor(this@TypexInputMethodService.foreground)
             background = rounded(keyBg, dp(9).toFloat())
             setPadding(dp(10), 0, dp(10), 0)
         }
@@ -250,7 +252,7 @@ class TypexInputMethodService : InputMethodService() {
             if (matches.isEmpty()) {
                 grid.addView(TextView(this).apply {
                     text = "No emoji found"
-                    setTextColor(foreground); gravity = Gravity.CENTER
+                    setTextColor(this@TypexInputMethodService.foreground); gravity = Gravity.CENTER
                     setPadding(0, dp(12), 0, dp(12))
                 })
             }
@@ -281,7 +283,7 @@ class TypexInputMethodService : InputMethodService() {
         parent.addView(save, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(38)))
         ClipboardHistoryStore.all(this).take(6).forEach { item ->
             val entry = TextView(this).apply {
-                text = item.take(90); setTextColor(foreground); setPadding(dp(8), dp(6), dp(8), dp(6))
+                text = item.take(90); setTextColor(this@TypexInputMethodService.foreground); setPadding(dp(8), dp(6), dp(8), dp(6))
                 background = rounded(keyBg, dp(8).toFloat())
                 setOnClickListener {
                     currentInputConnection?.commitText(item, 1)
@@ -523,7 +525,7 @@ class TypexInputMethodService : InputMethodService() {
             this.text = text
             textSize = 13f
             gravity = Gravity.CENTER
-            setTextColor(if (emphasized) accent else foreground)
+            setTextColor(if (emphasized) this@TypexInputMethodService.accent else this@TypexInputMethodService.foreground)
             setPadding(dp(5), 0, dp(5), 0)
             setOnClickListener { action() }
             if (onLongPress != null) setOnLongClickListener {
@@ -561,7 +563,7 @@ class TypexInputMethodService : InputMethodService() {
         return TextView(this).apply {
             text = label
             textSize = if (label.length == 1) keyTextSizeSp.toFloat() else (keyTextSizeSp - 8).toFloat()
-            setTextColor(foreground)
+            setTextColor(this@TypexInputMethodService.foreground)
             gravity = Gravity.CENTER
             typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
             background = rounded(color, dp(keyCornerRadiusDp).toFloat())
