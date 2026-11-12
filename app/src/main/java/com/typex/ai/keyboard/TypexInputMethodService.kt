@@ -28,6 +28,7 @@ import com.typex.ai.languages.AdaptivePredictionRanker
 import com.typex.ai.languages.SmartKeyboardIntelligence
 import com.typex.ai.languages.SwipeTypingEngine
 import com.typex.ai.languages.bengali.BengaliPhoneticEngine
+import com.typex.ai.languages.bengali.BengaliKeyboardLayoutEngine
 import com.typex.ai.languages.bengali.BengaliWordSuggestionEngine
 import com.typex.ai.languages.bengali.BengaliCustomDictionaryStore
 import com.typex.ai.languages.bengali.BengaliAutocorrectEngine
@@ -170,8 +171,9 @@ class TypexInputMethodService : InputMethodService() {
             addRow(container, listOf("@","#","$","%","&","-","+","(",")","/"))
             addRow(container, listOf("=","*","\"",":",";","!","?","'","⌫"))
         } else {
-            KeyboardLayoutEngine.rows(TypexThemes.keyboardLayout(this))
-                .forEach { row -> addRow(container, row.map(::displayKey)) }
+            val rows = if (bengaliMode) BengaliKeyboardLayoutEngine.rows(TypexThemes.bengaliLayout(this))
+                else KeyboardLayoutEngine.rows(TypexThemes.keyboardLayout(this))
+            rows.forEach { row -> addRow(container, row) }
         }
         addBottomRows(container)
     }
@@ -320,9 +322,12 @@ class TypexInputMethodService : InputMethodService() {
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(keyHeightDp + 3)
             ).apply { bottomMargin = dp(6) }
         }
-        keys.forEach { label ->
-            val weight = if (label == "⇧" || label == "⌫") 1.35f else 1f
-            row.addView(makeKey(label), LinearLayout.LayoutParams(0, dp(keyHeightDp), weight).apply {
+        keys.forEach { logicalKey ->
+            val label = if (bengaliMode) BengaliKeyboardLayoutEngine.displayForKey(
+                TypexThemes.bengaliLayout(this), logicalKey, shifted || capsLocked
+            ) else displayKey(logicalKey)
+            val weight = if (logicalKey == "⇧" || logicalKey == "⌫") 1.35f else 1f
+            row.addView(makeKey(label, actionLabel = logicalKey), LinearLayout.LayoutParams(0, dp(keyHeightDp), weight).apply {
                 marginStart = dp(keySpacingDp)
                 marginEnd = dp(keySpacingDp)
             })
@@ -347,6 +352,19 @@ class TypexInputMethodService : InputMethodService() {
             bengaliMode = !bengaliMode
             symbols = false
             renderKeyboard()
+        }
+        addBottomKey(row, if (bengaliMode) BengaliKeyboardLayoutEngine.layoutName(TypexThemes.bengaliLayout(this)) else "ABC", 1.0f, keyBg) {
+            if (bengaliMode) {
+                val layouts = BengaliKeyboardLayoutEngine.supported
+                val current = BengaliKeyboardLayoutEngine.normalize(TypexThemes.bengaliLayout(this))
+                val next = layouts[(layouts.indexOf(current) + 1) % layouts.size]
+                commitBengaliBuffer()
+                TypexThemes.saveBengaliLayout(this, next)
+                renderKeyboard()
+            } else {
+                symbols = !symbols
+                renderKeyboard()
+            }
         }
         addBottomKey(row, ",", 0.75f, keyBg) { commitPunctuation(",") }
         addBottomKey(row, if (bengaliMode) "স্পেস" else "space", 3.6f, keyBg) {
@@ -559,7 +577,7 @@ class TypexInputMethodService : InputMethodService() {
         })
     }
 
-    private fun makeKey(label: String, color: Int = keyBg): TextView {
+    private fun makeKey(label: String, color: Int = keyBg, actionLabel: String = label): TextView {
         return TextView(this).apply {
             text = label
             textSize = if (label.length == 1) keyTextSizeSp.toFloat() else (keyTextSizeSp - 8).toFloat()
@@ -581,9 +599,9 @@ class TypexInputMethodService : InputMethodService() {
                 if (TypexThemes.keySoundEnabled(this@TypexInputMethodService)) {
                     playSoundEffect(android.view.SoundEffectConstants.CLICK)
                 }
-                handleKey(label)
+                handleKey(actionLabel)
             }
-            if (label == "⌫") {
+            if (actionLabel == "⌫") {
                 setOnTouchListener { view, event ->
                     when (event.action) {
                         MotionEvent.ACTION_DOWN -> {
@@ -601,7 +619,7 @@ class TypexInputMethodService : InputMethodService() {
                     }
                 }
             }
-            else if (label.length == 1 && label[0].isLetter()) {
+            else if (actionLabel.length == 1 && actionLabel[0].isAsciiLetter()) {
                 setOnTouchListener { view, event ->
                     when (event.action) {
                         MotionEvent.ACTION_DOWN -> {
@@ -691,7 +709,7 @@ class TypexInputMethodService : InputMethodService() {
                 val key = row.getChildAt(keyIndex)
                 if (key !is TextView) continue
                 val value = key.text?.toString().orEmpty()
-                if (value.length != 1 || !value[0].isLetter()) continue
+                if (value.length != 1 || !value[0].isAsciiLetter()) continue
                 val location = IntArray(2)
                 key.getLocationOnScreen(location)
                 val inside = rawX >= location[0] && rawX <= location[0] + key.width &&
@@ -792,7 +810,11 @@ class TypexInputMethodService : InputMethodService() {
         val connection = currentInputConnection ?: return
         val selected = connection.getSelectedText(0)
         if (!selected.isNullOrEmpty()) connection.commitText("", 1)
-        else connection.deleteSurroundingText(1, 0)
+        else {
+            if (!connection.deleteSurroundingTextInCodePoints(1, 0)) {
+                connection.deleteSurroundingText(1, 0)
+            }
+        }
     }
 
     private fun startDeleteRepeat() {
