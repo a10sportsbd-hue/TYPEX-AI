@@ -95,10 +95,13 @@ object BengaliPhoneticEngine {
         "o" to Pair("ও", "ো")
     )
 
+    /**
+     * Normalize spacing and the common w/o alias without destroying case.
+     * Case is significant for Avro-style pairs such as T/Th, NG/Ng and
+     * uppercase vowel keys, so callers must not lowercase the input here.
+     */
     fun normalizeRomanInput(input: String): String =
-        input.trim().lowercase()
-            .replace("ou", "ou")
-            .replace("w", "o")
+        input.trim().replace("w", "o")
 
     fun addDictionaryEntry(roman: String, bengali: String) {
         val key = roman.trim().lowercase()
