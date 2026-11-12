@@ -123,5 +123,10 @@ See [`docs/PHASE27.md`](docs/PHASE27.md) for opt-in local English/Bengali candid
 - Independent English/Bengali opt-in learning controls, editable learned-word lists, per-language reset, and legacy preference migration.
 - See `docs/PHASE28.md` for privacy and validation notes.
 
+
+## Phase 29 — Keyboard Core Recovery (in progress)
+
+See [`docs/PHASE29.md`](docs/PHASE29.md). The first increment isolates Bengali Roman composition state and integrates it into the IME with focused unit tests. Avro, National and Probhat layout implementation and real-device validation remain pending; do not treat this phase as complete yet.
+
 ## CI build
 GitHub Actions builds a debug APK on pushes to `main` and manual workflow dispatch. The APK is published as the `TYPEX-AI-debug-apk` workflow artifact after a successful build.
