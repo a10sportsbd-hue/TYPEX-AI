@@ -900,11 +900,12 @@ class TypexInputMethodService : InputMethodService() {
         if (!selected.isNullOrEmpty()) connection.commitText("", 1)
         else {
             val beforeCursor = connection.getTextBeforeCursor(16, 0)
-            val codePoints = UnicodeDeletionEngine.codePointsToDelete(beforeCursor ?: "")
+            val textBeforeCursor = beforeCursor ?: ""
+            val codePoints = UnicodeDeletionEngine.codePointsToDelete(textBeforeCursor)
             if (codePoints > 0) {
                 if (!connection.deleteSurroundingTextInCodePoints(codePoints, 0)) {
-                    val utf16Length = Character.offsetByCodePoints(beforeCursor, beforeCursor.length, -codePoints)
-                    connection.deleteSurroundingText(beforeCursor.length - utf16Length, 0)
+                    val utf16Length = Character.offsetByCodePoints(textBeforeCursor, textBeforeCursor.length, -codePoints)
+                    connection.deleteSurroundingText(textBeforeCursor.length - utf16Length, 0)
                 }
             } else if (beforeCursor == null) {
                 connection.deleteSurroundingTextInCodePoints(1, 0)
