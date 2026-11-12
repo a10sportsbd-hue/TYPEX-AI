@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.Assert.assertEquals
 
 class BengaliKeyboardLayoutEngineTest {
     @Test fun exposesAllThreeRequestedLayouts() {
@@ -28,4 +29,13 @@ class BengaliKeyboardLayoutEngineTest {
         assertEquals("avro", BengaliKeyboardLayoutEngine.normalize("unknown"))
         assertTrue(BengaliKeyboardLayoutEngine.isPhonetic("unknown"))
     }
+    @Test fun avroPhoneticPreservesCaseSensitiveRetroflexKeys() {
+        assertEquals("ট", BengaliPhoneticEngine.transliterate("T"))
+        assertEquals("ঠ", BengaliPhoneticEngine.transliterate("Th"))
+        assertEquals("ড", BengaliPhoneticEngine.transliterate("D"))
+        assertEquals("ঢ", BengaliPhoneticEngine.transliterate("Dh"))
+        assertEquals("ষ", BengaliPhoneticEngine.transliterate("Sh"))
+        assertEquals("ত", BengaliPhoneticEngine.transliterate("t"))
+    }
+
 }
