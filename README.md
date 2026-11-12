@@ -122,3 +122,6 @@ See [`docs/PHASE27.md`](docs/PHASE27.md) for opt-in local English/Bengali candid
 ## Phase 28 — Personal Dictionary & Learning Controls
 - Independent English/Bengali opt-in learning controls, editable learned-word lists, per-language reset, and legacy preference migration.
 - See `docs/PHASE28.md` for privacy and validation notes.
+
+## CI build
+GitHub Actions builds a debug APK on pushes to `main` and manual workflow dispatch. The APK is published as the `TYPEX-AI-debug-apk` workflow artifact after a successful build.
