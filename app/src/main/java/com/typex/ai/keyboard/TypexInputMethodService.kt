@@ -624,7 +624,7 @@ class TypexInputMethodService : InputMethodService() {
                             }
                             swipePath.setLength(0)
                             swipeMoved = false
-                            swipePath.append(label.lowercase())
+                            swipePath.append(actionLabel.lowercase())
                             updateSwipePreview()
                             true
                         }
@@ -642,6 +642,7 @@ class TypexInputMethodService : InputMethodService() {
                                 view.animate().scaleX(1f).scaleY(1f).setDuration(80).start()
                             }
                             val canSwipe = !symbols && !isPasswordField(currentEditorInputType) &&
+                                (!bengaliMode || BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this))) &&
                                 swipeMoved && swipePath.length >= 3
                             val candidate = if (canSwipe && bengaliMode) {
                                 bengaliSwipeEngine.candidates(swipePath.toString(), 1).firstOrNull()?.second
@@ -661,7 +662,7 @@ class TypexInputMethodService : InputMethodService() {
                                 }
                                 renderKeyboard()
                             } else {
-                                handleKey(label)
+                                handleKey(actionLabel)
                             }
                             swipePath.setLength(0)
                             swipeMoved = false
