@@ -20,3 +20,14 @@ Begin the TYPEX AI rebuild by making Bengali phonetic composition state explicit
 - Implement and validate selectable Avro, National and Probhat input methods using documented mappings.
 - Recover standard keyboard controls and test Bengali/English switching, backspace, punctuation and editor actions.
 - Run automated tests and build the APK only after the Phase 29 scope is complete.
+## Layout modes added in this increment
+- Added selectable Avro (Roman QWERTY), Probhat (direct Unicode) and National/Jatiya (direct Unicode) modes.
+- Added a persistent layout preference. While Bengali mode is active, the toolbar layout control cycles Avro → Probhat → Jatiya.
+- Direct layouts use Unicode output and do not pass Bengali characters through the Roman transliteration path.
+- Added tests for key maps and case-sensitive Avro-style retroflex keys.
+- Backspace now attempts code-point deletion through InputConnection before falling back to one UTF-16 code unit.
+
+## Validation boundaries
+- The key maps are an initial mobile QWERTY adaptation and still need comparison against the official desktop/mobile layouts and real-user validation. They are not yet certified as exact standards-compliant implementations.
+- Avro transliteration has improved case-sensitive retroflex support, but is not yet a complete Avro-compatible engine.
+- National/Probhat shift layers, conjunct formation, kar/reph automation, candidate handling, and cursor/text-editing gestures remain to be completed.
