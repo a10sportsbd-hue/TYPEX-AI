@@ -42,12 +42,12 @@ fun BengaliDictionaryScreen(onBack: () -> Unit) {
             items(entries.toList(), key = { it.first }) { entry ->
                 Row(Modifier.fillMaxWidth().background(Color(0xFF191827), RoundedCornerShape(12.dp)).padding(12.dp)) {
                     Column(Modifier.weight(1f)) {
-                        Text(entry.key, color = Color(0xFFB9A4FF))
-                        Text(entry.value, color = Color.White)
+                        Text(entry.first, color = Color(0xFFB9A4FF))
+                        Text(entry.second, color = Color.White)
                     }
                     Text("Delete", color = Color(0xFFFF8A8A),
                         modifier = Modifier.clickable {
-                            BengaliCustomDictionaryStore.remove(context, entry.key)
+                            BengaliCustomDictionaryStore.remove(context, entry.first)
                             entries = BengaliCustomDictionaryStore.all(context)
                         }.padding(8.dp))
                 }
