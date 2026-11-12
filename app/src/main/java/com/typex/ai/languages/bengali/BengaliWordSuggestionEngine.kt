@@ -39,6 +39,24 @@ class BengaliWordSuggestionEngine(
         }.distinct().take(limit)
     }
 
+    /**
+     * Candidate lookup for direct-Unicode layouts (Probhat/Jatiya).
+     * Matches the Bengali text already present in the editor; it does not
+     * infer or fabricate a Roman composition buffer.
+     */
+    fun suggestNativePrefix(bengaliPrefix: String, limit: Int = 5): List<String> {
+        if (limit <= 0) return emptyList()
+        val query = BengaliOrthography.normalizeUnicode(bengaliPrefix.trim())
+        if (query.isEmpty()) return emptyList()
+        return dictionary.values.asSequence()
+            .map(BengaliOrthography::normalizeUnicode)
+            .distinct()
+            .filter { it.startsWith(query) && it != query }
+            .sortedWith(compareBy<String> { it.length }.thenBy { it })
+            .take(limit)
+            .toList()
+    }
+
     private fun typoLimit(length: Int) = if (length >= 5) 1 else 0
 
     private fun editDistance(a: String, b: String): Int {
