@@ -521,6 +521,37 @@ class TypexInputMethodService : InputMethodService() {
                 }
             }
             parent.addView(suggestions)
+        } else if (bengaliMode &&
+            !BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this)) &&
+            !isPasswordField(currentEditorInputType)) {
+            val connection = currentInputConnection
+            val beforeCursor = connection?.getTextBeforeCursor(64, 0)?.toString().orEmpty()
+            val nativePrefix = beforeCursor.substringAfterLast(Regex("[\\s.,!?;:।]"))
+            val nativeCandidates = BengaliWordSuggestionEngine(
+                builtInBengaliWords + customBengaliWords
+            ).suggestNativePrefix(nativePrefix, limit = 5)
+            if (nativeCandidates.isNotEmpty()) {
+                val suggestions = LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, dp(32)
+                    )
+                }
+                nativeCandidates.forEachIndexed { index, candidate ->
+                    addSuggestion(suggestions, candidate, index == 0) {
+                        val editor = currentInputConnection ?: return@addSuggestion
+                        editor.deleteSurroundingText(nativePrefix.length, 0)
+                        editor.commitText(candidate, 1)
+                        TypingStatsStore.recordSuggestion(this)
+                        UserVocabularyStore.recordAcceptedBengali(this, candidate)
+                        learnedBengaliScores = UserVocabularyStore.bengaliScores(this)
+                        previousCommittedWord = candidate
+                        renderKeyboard()
+                    }
+                }
+                parent.addView(suggestions)
+            }
         } else if (!isPasswordField(currentEditorInputType) && typedToken.isNotEmpty()) {
             val suggestions = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
