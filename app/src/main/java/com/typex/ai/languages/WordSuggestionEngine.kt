@@ -29,6 +29,7 @@ class WordSuggestionEngine(
             .filter { it.second <= threshold(q.length) }
             .minWithOrNull(
                 compareBy<Pair<String, Int>> { it.second }
+                    .thenByDescending { isSubsequence(q, it.first) }
                     .thenByDescending { preferredRank[it.first] ?: 0 }
                     .thenBy { it.first.length }
             )
@@ -36,6 +37,14 @@ class WordSuggestionEngine(
     }
 
     fun addWord(word: String): Set<String> = words + word.trim().lowercase()
+
+    private fun isSubsequence(needle: String, haystack: String): Boolean {
+        var index = 0
+        for (character in haystack) {
+            if (index < needle.length && needle[index] == character) index++
+        }
+        return index == needle.length
+    }
 
     private fun threshold(length: Int): Int = when {
         length < 4 -> 0
