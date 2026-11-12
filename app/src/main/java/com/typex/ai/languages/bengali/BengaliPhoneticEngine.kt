@@ -175,7 +175,7 @@ object BengaliPhoneticEngine {
             lastConsonantLength = 0
             i++
         }
-        return out.toString()
+        return BengaliOrthography.normalizeUnicode(out.toString())
     }
 
     fun suggestions(roman: String, limit: Int = 5): List<String> {
