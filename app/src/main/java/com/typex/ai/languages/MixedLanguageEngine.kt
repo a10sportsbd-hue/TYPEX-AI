@@ -22,7 +22,8 @@ object MixedLanguageEngine {
         customBengali: Map<String, String> = emptyMap(),
         knownEnglishWords: Set<String> = emptySet()
     ): String {
-        val token = roman.trim().lowercase()
+        val rawToken = roman.trim()
+        val token = rawToken.lowercase()
         if (token.isEmpty()) return ""
         customBengali[token]?.let { return it }
         bengaliDictionary[token]?.let { return it }
