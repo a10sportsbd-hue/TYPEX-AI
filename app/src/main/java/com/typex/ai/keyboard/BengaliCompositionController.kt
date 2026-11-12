@@ -10,7 +10,7 @@ class BengaliCompositionController {
     private val buffer = StringBuilder()
 
     fun append(value: String, customWords: Map<String, String> = emptyMap(), knownEnglishWords: Set<String> = emptySet()): String {
-        if (value.isNotEmpty()) buffer.append(value.lowercase())
+        if (value.isNotEmpty()) buffer.append(value)
         return preview(customWords, knownEnglishWords)
     }
 
