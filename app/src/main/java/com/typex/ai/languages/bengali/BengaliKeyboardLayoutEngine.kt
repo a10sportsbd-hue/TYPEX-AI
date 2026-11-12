@@ -18,13 +18,13 @@ object BengaliKeyboardLayoutEngine {
     )
 
     private val probhat = mapOf(
-        "q" to "ধ", "w" to "ূ", "e" to "ী", "r" to "র", "t" to "ট", "y" to "এ", "u" to "ু", "i" to "ি", "o" to "ও", "p" to "প",
+        "q" to "দ", "w" to "ূ", "e" to "ী", "r" to "র", "t" to "ট", "y" to "এ", "u" to "ু", "i" to "ি", "o" to "ও", "p" to "প",
         "a" to "া", "s" to "স", "d" to "ড", "f" to "ত", "g" to "গ", "h" to "হ", "j" to "জ", "k" to "ক", "l" to "ল",
         "z" to "য়", "x" to "শ", "c" to "চ", "v" to "আ", "b" to "ব", "n" to "ন", "m" to "ম"
     )
     private val probhatShift = mapOf(
         "q" to "ধ", "w" to "ঊ", "e" to "ঈ", "r" to "ড়", "t" to "ঠ", "y" to "ঐ", "u" to "উ", "i" to "ই", "o" to "ঔ", "p" to "ফ",
-        "a" to "ঌ", "s" to "ষ", "d" to "ঢ", "f" to "থ", "g" to "ঘ", "h" to "ঃ", "j" to "ঝ", "k" to "খ", "l" to "ং",
+        "a" to "ঌ", "s" to "ৡ", "d" to "ৄ", "f" to "ত", "g" to "ঘ", "h" to "ঽ", "j" to "ঝ", "k" to "খ", "l" to "ং",
         "z" to "য়", "x" to "ষ", "c" to "ছ", "v" to "অ", "b" to "ভ", "n" to "ণ", "m" to "ঙ"
     )
     private val jatiya = mapOf(
