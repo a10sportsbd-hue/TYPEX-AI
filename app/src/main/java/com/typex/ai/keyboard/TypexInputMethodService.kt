@@ -732,8 +732,17 @@ class TypexInputMethodService : InputMethodService() {
                 if (!isPasswordField(currentEditorInputType) &&
                     (label.length == 1 && label[0].isLetterOrDigit() || label == " ")
                 ) TypingStatsStore.recordKey(this)
-                if (bengaliMode && !symbols && label.length == 1 && label[0].isLetter()) {
+                if (bengaliMode && !symbols && BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this)) &&
+                    label.length == 1 && label[0].isLetter()
+                ) {
                     appendRoman(label.lowercase())
+                } else if (bengaliMode && !symbols && !BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this)) &&
+                    label.length == 1 && label[0].isLetter()
+                ) {
+                    val output = BengaliKeyboardLayoutEngine.outputForKey(
+                        TypexThemes.bengaliLayout(this), label, shifted || capsLocked
+                    )
+                    if (output != null) currentInputConnection?.commitText(output, 1)
                 } else {
                     commitBengaliBuffer()
                     if (label == " " || label in listOf(".", ",", "!", "?", "\\n")) {
@@ -860,6 +869,8 @@ class TypexInputMethodService : InputMethodService() {
             setColor(color)
             cornerRadius = radius
         }
+
+    private fun Char.isAsciiLetter(): Boolean = this in 'a'..'z' || this in 'A'..'Z'
 
     private fun dp(value: Int): Int =
         (value * resources.displayMetrics.density).roundToInt()
