@@ -60,6 +60,10 @@ class TypexInputMethodService : InputMethodService() {
     private var oneHandMode = false
     private var clipboardPanelVisible = false
     private var emojiPanelVisible = false
+    private var editPanelVisible = false
+    private var spaceLastX = 0f
+    private var spaceMoveRemainder = 0f
+    private var spaceCursorMoved = false
     private val wordEngine = WordSuggestionEngine()
     private fun advancedEnglishEngine() =
         AdvancedEnglishTypingEngine(frequency = learnedEnglishScores)
@@ -92,6 +96,7 @@ class TypexInputMethodService : InputMethodService() {
         refreshPersonalDictionaries()
         clipboardPanelVisible = false
         emojiPanelVisible = false
+        editPanelVisible = false
         if (isPasswordField(currentEditorInputType)) {
             bengaliMode = false
             shifted = false
@@ -165,6 +170,7 @@ class TypexInputMethodService : InputMethodService() {
             ))
         }
         if (emojiPanelVisible) { addEmojiSearchPanel(container); return }
+        if (editPanelVisible) { addEditActionsPanel(container); return }
         if (clipboardPanelVisible) { addClipboardHistoryPanel(container); return }
         if (symbols) {
             addRow(container, listOf("1","2","3","4","5","6","7","8","9","0"))
@@ -229,7 +235,12 @@ class TypexInputMethodService : InputMethodService() {
                 root?.requestLayout()
             }
         }
-        addBottomKey(row, "ABC", 0.8f, keyBg) { symbols = false; renderKeyboard() }
+        addBottomKey(row, "✎", 0.8f, keyBg) {
+            editPanelVisible = !editPanelVisible
+            emojiPanelVisible = false
+            clipboardPanelVisible = false
+            renderKeyboard()
+        }
         parent.addView(row)
     }
 
@@ -346,6 +357,81 @@ class TypexInputMethodService : InputMethodService() {
         parent.addView(row)
     }
 
+    private fun addSpacebar(row: LinearLayout) {
+        val key = makeKey(if (bengaliMode) "স্পেস" else "space", keyBg, "space")
+        key.setOnClickListener {
+            commitBengaliBuffer()
+            currentInputConnection?.commitText(" ", 1)
+            if (shifted && !capsLocked) { shifted = false; renderKeyboard() }
+        }
+        key.setOnTouchListener { view, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    spaceLastX = event.rawX
+                    spaceMoveRemainder = 0f
+                    spaceCursorMoved = false
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val delta = event.rawX - spaceLastX
+                    spaceLastX = event.rawX
+                    spaceMoveRemainder += delta
+                    val threshold = dp(9).toFloat()
+                    while (kotlin.math.abs(spaceMoveRemainder) >= threshold) {
+                        val direction = if (spaceMoveRemainder > 0) 1 else -1
+                        if (moveCursorByCodePoint(direction)) spaceCursorMoved = true
+                        spaceMoveRemainder -= direction * threshold
+                    }
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    if (!spaceCursorMoved) {
+                        commitBengaliBuffer()
+                        currentInputConnection?.commitText(" ", 1)
+                    }
+                    true
+                }
+                MotionEvent.ACTION_CANCEL -> true
+                else -> true
+            }
+        }
+        row.addView(key, LinearLayout.LayoutParams(0, dp(keyHeightDp), 3.6f).apply {
+            marginStart = dp(keySpacingDp); marginEnd = dp(keySpacingDp)
+        })
+    }
+
+    private fun moveCursorByCodePoint(direction: Int): Boolean {
+        val connection = currentInputConnection ?: return false
+        val extracted = connection.getExtractedText(android.view.inputmethod.ExtractedTextRequest(), 0) ?: return false
+        val text = extracted.text ?: return false
+        val cursor = extracted.selectionEnd
+        if (cursor < 0 || cursor > text.length) return false
+        val next = try { Character.offsetByCodePoints(text, cursor, direction) } catch (_: Exception) { return false }
+        if (next !in 0..text.length) return false
+        return connection.setSelection(next, next)
+    }
+
+    private fun addEditActionsPanel(parent: LinearLayout) {
+        val actions = listOf(
+            "Select all" to android.R.id.selectAll,
+            "Cut" to android.R.id.cut,
+            "Copy" to android.R.id.copy,
+            "Paste" to android.R.id.paste
+        )
+        actions.chunked(2).forEach { group ->
+            val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+            group.forEach { (label, actionId) ->
+                addBottomKey(row, label, 1f, keyBg) {
+                    if (!isPasswordField(currentEditorInputType)) {
+                        currentInputConnection?.performContextMenuAction(actionId)
+                    }
+                }
+            }
+            parent.addView(row)
+        }
+        addPanelClose(parent) { editPanelVisible = false; renderKeyboard() }
+    }
+
     private fun addBottomRows(parent: LinearLayout) {
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -365,14 +451,7 @@ class TypexInputMethodService : InputMethodService() {
             renderKeyboard()
         }
         addBottomKey(row, ",", 0.75f, keyBg) { commitPunctuation(",") }
-        addBottomKey(row, if (bengaliMode) "স্পেস" else "space", 3.6f, keyBg) {
-            commitBengaliBuffer()
-            currentInputConnection?.commitText(" ", 1)
-            if (shifted && !capsLocked) {
-                shifted = false
-                renderKeyboard()
-            }
-        }
+        addSpacebar(row)
         addBottomKey(row, ".", 0.75f, keyBg) { commitPunctuation(".") }
         addBottomKey(row, "↵", 1.2f, specialBg) { commitBengaliBuffer(); performEnter() }
         parent.addView(row)
