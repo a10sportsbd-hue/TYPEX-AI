@@ -171,7 +171,7 @@ class TypexInputMethodService : InputMethodService() {
             addRow(container, listOf("@","#","$","%","&","-","+","(",")","/"))
             addRow(container, listOf("=","*","\"",":",";","!","?","'","⌫"))
         } else {
-            val rows = if (bengaliMode) BengaliKeyboardLayoutEngine.rows(TypexThemes.bengaliLayout(this))
+            val rows = if (bengaliMode) BengaliKeyboardLayoutEngine.rows(TypexThemes.bengaliLayout(this@TypexInputMethodService))
                 else KeyboardLayoutEngine.rows(TypexThemes.keyboardLayout(this))
             rows.forEach { row -> addRow(container, row) }
         }
@@ -213,10 +213,10 @@ class TypexInputMethodService : InputMethodService() {
                 if (intent != null) startActivity(intent)
             } catch (_: Exception) { }
         }
-        addBottomKey(row, if (bengaliMode) BengaliKeyboardLayoutEngine.layoutName(TypexThemes.bengaliLayout(this)) else if (oneHandMode) "↔" else "⇤", 0.8f, specialBg) {
+        addBottomKey(row, if (bengaliMode) BengaliKeyboardLayoutEngine.layoutName(TypexThemes.bengaliLayout(this@TypexInputMethodService)) else if (oneHandMode) "↔" else "⇤", 0.8f, specialBg) {
             if (bengaliMode) {
                 val layouts = BengaliKeyboardLayoutEngine.supported
-                val current = BengaliKeyboardLayoutEngine.normalize(TypexThemes.bengaliLayout(this))
+                val current = BengaliKeyboardLayoutEngine.normalize(TypexThemes.bengaliLayout(this@TypexInputMethodService))
                 val nextLayout = layouts[(layouts.indexOf(current) + 1) % layouts.size]
                 commitBengaliBuffer()
                 TypexThemes.saveBengaliLayout(this, nextLayout)
@@ -332,10 +332,10 @@ class TypexInputMethodService : InputMethodService() {
             ).apply { bottomMargin = dp(6) }
         }
         keys.forEach { logicalKey ->
-            val label = if (bengaliMode && BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this))) {
+            val label = if (bengaliMode && BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this@TypexInputMethodService))) {
                 if (shifted || capsLocked) logicalKey.uppercase() else logicalKey
             } else if (bengaliMode) {
-                BengaliKeyboardLayoutEngine.displayForKey(TypexThemes.bengaliLayout(this), logicalKey, shifted || capsLocked)
+                BengaliKeyboardLayoutEngine.displayForKey(TypexThemes.bengaliLayout(this@TypexInputMethodService), logicalKey, shifted || capsLocked)
             } else displayKey(logicalKey)
             val weight = if (logicalKey == "⇧" || logicalKey == "⌫") 1.35f else 1f
             row.addView(makeKey(label, actionLabel = logicalKey), LinearLayout.LayoutParams(0, dp(keyHeightDp), weight).apply {
@@ -644,7 +644,7 @@ class TypexInputMethodService : InputMethodService() {
                                 view.animate().scaleX(1f).scaleY(1f).setDuration(80).start()
                             }
                             val canSwipe = !symbols && !isPasswordField(currentEditorInputType) &&
-                                (!bengaliMode || BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this))) &&
+                                (!bengaliMode || BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this@TypexInputMethodService))) &&
                                 swipeMoved && swipePath.length >= 3
                             val candidate = if (canSwipe && bengaliMode) {
                                 bengaliSwipeEngine.candidates(swipePath.toString(), 1).firstOrNull()?.second
@@ -731,15 +731,15 @@ class TypexInputMethodService : InputMethodService() {
                 if (!isPasswordField(currentEditorInputType) &&
                     (label.length == 1 && label[0].isLetterOrDigit() || label == " ")
                 ) TypingStatsStore.recordKey(this)
-                if (bengaliMode && !symbols && BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this)) &&
+                if (bengaliMode && !symbols && BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this@TypexInputMethodService)) &&
                     label.length == 1 && label[0].isLetter()
                 ) {
                     appendRoman(label)
-                } else if (bengaliMode && !symbols && !BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this)) &&
+                } else if (bengaliMode && !symbols && !BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this@TypexInputMethodService)) &&
                     label.length == 1 && label[0].isLetter()
                 ) {
                     val output = BengaliKeyboardLayoutEngine.outputForKey(
-                        TypexThemes.bengaliLayout(this), label, shifted || capsLocked
+                        TypexThemes.bengaliLayout(this@TypexInputMethodService), label, shifted || capsLocked
                     )
                     if (output != null) currentInputConnection?.commitText(output, 1)
                 } else {
