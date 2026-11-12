@@ -46,3 +46,14 @@ CI validation is being iterated on the current branch before merging to main.
 - `gradle testDebugUnitTest assembleDebug` completed successfully on the Phase 29 branch.
 - Debug APK artifact uploaded: `TYPEX-AI-debug-apk` (interim engineering build, not a final release).
 - Passing CI proves Kotlin compilation, unit-test task and APK packaging on the GitHub runner. It does not prove that the IME behaves correctly on every Android app/device.
+
+## Verified layout tables and Bengali deletion
+- Replaced provisional Probhat and National/Jatiya letter tables with exact normal/shift letter mappings transcribed from the upstream OpenBangla layout JSON definitions.
+- Added a deterministic touch-dispatch helper and tests to ensure Avro retains the displayed case-sensitive key while direct layouts pass the logical QWERTY key into their mapping.
+- Added `UnicodeDeletionEngine` to delete Bengali combining marks and virama-linked conjunct sequences as one grapheme-like unit where possible.
+- Added unit tests for ASCII, Bengali vowel signs, conjuncts and empty input.
+- Third-party source and GPL-3.0 license notice are included in `THIRD_PARTY_NOTICES.md` and `licenses/OPENBANGLA-GPL-3.0.txt`.
+
+Source references:
+- https://github.com/OpenBangla/OpenBangla-Keyboard/blob/master/data/Probhat.json
+- https://github.com/OpenBangla/OpenBangla-Keyboard/blob/master/data/National_Jatiya.json
