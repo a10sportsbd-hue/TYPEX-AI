@@ -41,6 +41,9 @@ object BengaliKeyboardLayoutEngine {
     fun normalize(layout: String): String = layout.lowercase().takeIf { it in supported } ?: AVRO
     fun rows(layout: String): List<List<String>> = qwertyRows
     fun isPhonetic(layout: String): Boolean = normalize(layout) == AVRO
+    /** Returns the logical Latin key for direct layouts, or the displayed key for Avro. */
+    fun touchInput(layout: String, logicalKey: String, displayedKey: String): String =
+        if (isPhonetic(layout)) displayedKey else logicalKey
     fun outputForKey(layout: String, key: String, shifted: Boolean = false): String? {
         val id = normalize(layout)
         if (id == AVRO) return null
