@@ -15,4 +15,21 @@ class BengaliPhoneticEngineTest {
     @Test fun suggestionsIncludeConvertedWord() {
         assert(BengaliPhoneticEngine.suggestions("ami").contains("আমি"))
     }
+    @Test fun caseSensitiveAvroKeysArePreserved() {
+        assertEquals("ট", BengaliPhoneticEngine.transliterate("T"))
+        assertEquals("ঠ", BengaliPhoneticEngine.transliterate("Th"))
+        assertEquals("ঞ", BengaliPhoneticEngine.transliterate("NG"))
+        assertEquals("ঙ", BengaliPhoneticEngine.transliterate("Ng"))
+        assertEquals("ঈ", BengaliPhoneticEngine.transliterate("I"))
+    }
+
+    @Test fun normalizationDoesNotDestroyAvroCase() {
+        assertEquals("Th", BengaliPhoneticEngine.normalizeRomanInput("  Th  "))
+        assertEquals("to", BengaliPhoneticEngine.normalizeRomanInput("tw"))
+    }
+
+    @Test fun suggestionsKeepCaseSensitiveConversion() {
+        assertEquals("ঠ", BengaliPhoneticEngine.suggestions("Th").first())
+    }
+
 }
