@@ -332,9 +332,11 @@ class TypexInputMethodService : InputMethodService() {
             ).apply { bottomMargin = dp(6) }
         }
         keys.forEach { logicalKey ->
-            val label = if (bengaliMode) BengaliKeyboardLayoutEngine.displayForKey(
-                TypexThemes.bengaliLayout(this), logicalKey, shifted || capsLocked
-            ) else displayKey(logicalKey)
+            val label = if (bengaliMode && BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this))) {
+                if (shifted || capsLocked) logicalKey.uppercase() else logicalKey
+            } else if (bengaliMode) {
+                BengaliKeyboardLayoutEngine.displayForKey(TypexThemes.bengaliLayout(this), logicalKey, shifted || capsLocked)
+            } else displayKey(logicalKey)
             val weight = if (logicalKey == "⇧" || logicalKey == "⌫") 1.35f else 1f
             row.addView(makeKey(label, actionLabel = logicalKey), LinearLayout.LayoutParams(0, dp(keyHeightDp), weight).apply {
                 marginStart = dp(keySpacingDp)
@@ -732,7 +734,7 @@ class TypexInputMethodService : InputMethodService() {
                 if (bengaliMode && !symbols && BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this)) &&
                     label.length == 1 && label[0].isLetter()
                 ) {
-                    appendRoman(label.lowercase())
+                    appendRoman(label)
                 } else if (bengaliMode && !symbols && !BengaliKeyboardLayoutEngine.isPhonetic(TypexThemes.bengaliLayout(this)) &&
                     label.length == 1 && label[0].isLetter()
                 ) {
