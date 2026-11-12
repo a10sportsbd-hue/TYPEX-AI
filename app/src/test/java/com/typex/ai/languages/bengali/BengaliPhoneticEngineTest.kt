@@ -32,4 +32,24 @@ class BengaliPhoneticEngineTest {
         assertEquals("ঠ", BengaliPhoneticEngine.suggestions("Th").first())
     }
 
+    @Test fun consonantVowelSignsComposeCorrectly() {
+        assertEquals("কা", BengaliPhoneticEngine.transliterate("ka"))
+        assertEquals("কি", BengaliPhoneticEngine.transliterate("ki"))
+        assertEquals("কে", BengaliPhoneticEngine.transliterate("ke"))
+        assertEquals("কো", BengaliPhoneticEngine.transliterate("ko"))
+        assertEquals("কৈ", BengaliPhoneticEngine.transliterate("koi"))
+    }
+
+    @Test fun supportedConjunctsAndRephSequencesAreStable() {
+        assertEquals("ক্ষ", BengaliPhoneticEngine.transliterate("ksh"))
+        assertEquals("জ্ঞ", BengaliPhoneticEngine.transliterate("gy"))
+        assertEquals("ক্র", BengaliPhoneticEngine.transliterate("kr"))
+        assertEquals("ত্র", BengaliPhoneticEngine.transliterate("tr"))
+        assertEquals("র্ক", BengaliPhoneticEngine.transliterate("rk"))
+    }
+
+    @Test fun outputKeepsSpacesAndConvertsDigits() {
+        assertEquals("আমি ১২", BengaliPhoneticEngine.transliterate("ami 12"))
+    }
+
 }
